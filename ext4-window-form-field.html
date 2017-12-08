@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ext Window-Form-Field</title>
+    <!--ExtJs框架开始-->
+    <script type="text/javascript" src="ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="ext/ext-all.js"></script>
+    <link rel="stylesheet" type="text/css" href="ext/resources/css/ext-all.css"/>
+    <!--ExtJs框架结束-->
+
+    <style>
+
+    /* 原样式
+    .x-form-invalid, textarea.x-form-invalid {
+      background-color: #FFFFFF;
+      background-image: url("../images/default/grid/invalid_line.gif");
+      border-color: #CC3300;
+    }
+    */
+    /* 去掉提示信息的下划线与红色边框 */
+    .x-form-invalid, textarea.x-form-invalid {
+        background-color: #FFFFFF;
+        background-image: none;
+        border-color: #B5B8C8;
+    }
+
+    </style>
+</head>
+<body>
+
+<script>
+
+    <!-- 主函数入口 -->
+    Ext.onReady(function () {
+        // 初始化标签中的Ext:Qtip属性,并为它赋予显示提示的动作
+        Ext.QuickTips.init();
+
+        // TextField校验错误的提示方式: side为右边缘,比较常用.
+        // 参数枚举值为"qtip","title","under","side",id(元素id)，
+        Ext.form.Field.prototype.msgTarget = 'side';
+
+        // 创建一个TextField文本对象.
+        var username = new Ext.form.TextField({
+            width:140,
+
+            // 文本内容是否允许为空(def:true)
+            allowBlank:false,
+            //文本内容为空的提示信息(def: "This field is required")
+            blankText:'用户名不能为空',
+
+            //输入字段允许的最大字符数
+            maxLength:20,
+            // 输入字符数多于最大字符数显示信息(def:"The maximum length for this
+            // field is {maxLength}")
+            maxLengthText:'用户名太长',
+
+
+            minLength:4,
+            minLengthText:'用户名太短',
+
+            //字段的name属性,HTML的name属性(def:"")
+            name:'username',
+
+            //组件显示的Label文本(def:"")
+            fieldLabel:'用户名'
+        });
+
+        var password = new Ext.form.TextField({
+            width:140,
+            allowBlank:false,
+            blankText:'密码不能为空',
+            maxLength:20,
+            maxLengthText:'密码过长',
+            minLength:4,
+            minLengthText:'密码少于四个字符',
+            name:'password',
+            fieldLabel:'密码'
+        });
+
+        var form = new Ext.form.FormPanel({
+            frame:true,
+            title:'表单标题',
+            style: 'margin:10px,20px,10px,20px',
+            html:'<div style="padding: 10px">有个表单</div>',
+
+            //表单中包含textField
+            items:[username,password]
+        });
+
+        var win = new Ext.Window({
+            title:'Ext窗口组件',
+            width:512,
+            height:256,
+            bodyStyle: {
+                padding:'5px'
+
+            },
+            buttonAlign:'right',
+            plain:false,
+            html:'<div><p>窗体组件内容</p></div>',
+            resizable:true,
+            modal:true,
+            closable:true,
+            maximizable:true,
+            minimizable:true,
+            closeAction:'hide',
+
+            //组件
+            items: form
+        });
+        win.show();
+
+    })
+</script>
+</body>
+</html>

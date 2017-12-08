@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ext 文本编辑器 Editor</title>
+  <script src="ext/adapter/ext/ext-base.js"></script>
+  <script src="ext/ext-all.js"></script>
+  <script src="ext/src/locale/ext-lang-zh_CN.js"></script>
+
+  <!-- 引入文本编辑器 -->
+  <script src="kindeditor/kindeditor.js" type="text/javascript"></script>
+
+  <link rel="stylesheet" href="ext/resources/css/ext-all.css" />
+</head>
+<body>
+
+<script>
+
+  Ext.onReady(function () {
+    Ext.QuickTips.init();
+    Ext.form.Field.prototype.msgTarget = 'side';
+
+    // 创建文本上传域
+    var extEditor = new Ext.form.HtmlEditor({
+      fieldLabel: '项目描述'
+    });
+
+    var keEditor = new Ext.form.TextArea({
+      id: 'keEditor',
+      fieldLabel: '项目描述',
+
+      width: 700,
+      height: 200
+    });
+
+    var form = new Ext.form.FormPanel({
+      frame: true,
+      style: 'margin: 10px',
+      items: [extEditor, keEditor],
+      listeners: {
+        'render': function () {
+          KE.show({
+            id: 'keEditor',
+            imageUploadJson: ''
+          });
+          setTimeout('KE.create("keEditor");', 1000);
+        }
+      }
+    });
+
+    var mainWindow = new Ext.Window({
+      title: '文本编辑',
+      width: '50%',
+      height: '30%',
+      items: [form]
+    });
+    mainWindow.show();
+  })
+
+</script>
+</body>
+</html>

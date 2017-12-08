@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ext 数字字段</title>
+
+  <script src="ext/adapter/ext/ext-base.js"></script>
+  <script src="ext/ext-all.js"></script>
+
+  <!-- 提示信息 国际化 -->
+  <script src="ext/src/locale/ext-lang-zh_CN.js"></script>
+
+  <link rel="stylesheet" href="ext/resources/css/ext-all.css"/>
+
+  <style>
+    .x-form-unit{
+      height: 22px;
+      line-height: 22px;
+      padding-left: 2px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+<script>
+
+  // 重写标签
+  // params(overrideClass,overrideObj) 要修改的类,要修改的内容
+  Ext.override(Ext.form.TextField,{
+    // 添加新的属性
+    unit:'',
+
+    // 渲染效果
+    onRender:function (ct, position) {
+      Ext.form.TextField.superclass.onRender.call(this, ct, position);
+
+      if (this.unit != '') {
+        this.unitEl = ct.createChild({
+          tag:'div',
+          html:this.unit
+        });
+
+        this.unitEl.addClass('x-form-unit');
+        this.width -= this.unit.replace(/[^\x00-\xff]/g, "xx").length * 6 + 2;
+
+        this.alignErrorIcon = function () {
+          // 偏移量
+          this.errorIcon.alignTo(this.unitEl, 'tl-tr', [2, 0])
+        }
+      }
+    }
+  });
+
+  // 主加载函数
+  Ext.onReady(function() {
+    Ext.QuickTips.init();
+    Ext.form.TextField.prototype.msgTarget = 'side';
+
+
+    var num = new Ext.form.NumberField({
+      name:'numField',
+      id:'numField',
+
+      // 设置下数点后面的位数,当位数超过时,系统会自动截断
+      decimalPrecision:2,
+
+      // 自定义重写的单位显示
+      unit:' cm',
+      fieldLabel:'身高',
+      allowBlank:false,
+
+      width:150
+    });
+
+    var hid = new Ext.form.Hidden({
+      name:'uid',
+      value:'1'
+    });
+
+    var dateField = new Ext.form.DateField({
+      fieldLabel:'出生日期',
+      format:'Y-m-d',
+      // 禁用的星期数组
+      disabledDaysText:'0',
+      editable:false,
+      allowBlank:false,
+      width:'300px',
+      height:'300px'
+    });
+
+    var form = new Ext.form.FormPanel({
+      title:'表单',
+      frame:true,
+      style:'margin:10px',
+      labelWidth:'50px',
+      labelAlign:'right',
+
+      // 引用要在已经定义元素之后
+      items:[num, hid, dateField],
+      buttons:[]
+    });
+
+
+
+    // 主窗口
+    var mainWindow = new Ext.Window({
+      title:'数字字段',
+      plain:true,
+      width: 476,
+      height: 374,
+      items:[form]
+    });
+    mainWindow.show();// 显示主窗口
+  })
+
+</script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ext Window-Form-Field</title>
+    <!--ExtJs框架开始-->
+    <script type="text/javascript" src="ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="ext/ext-all.js"></script>
+    <link rel="stylesheet" type="text/css" href="ext/resources/css/ext-all.css"/>
+    <!--ExtJs框架结束-->
+
+    <style>
+
+    /* 原样式
+    .x-form-invalid, textarea.x-form-invalid {
+      background-color: #FFFFFF;
+      background-image: url("../images/default/grid/invalid_line.gif");
+      border-color: #CC3300;
+    }
+    */
+    /* 去掉提示信息的下划线与红色边框 */
+    .x-form-invalid, textarea.x-form-invalid {
+        background-color: #FFFFFF;
+        background-image: none;
+        border-color: #B5B8C8;
+    }
+
+    </style>
+</head>
+<body>
+
+<script>
+
+    <!-- 主函数入口 -->
+    Ext.onReady(function () {
+        Ext.QuickTips.init();
+        Ext.form.Field.prototype.msgTarget = 'side';
+
+        // 创建一个动作
+        var btnSubmitClick = function () {
+          Ext.MessageBox.alert('提示','点击了提交按钮');
+        };
+
+        var btnResetClick = function () {
+          Ext.MessageBox.alert('提示','点击了重置按钮');
+        };
+
+        var btnSubmitMouseOver = function () {
+          Ext.MessageBox.alert('提示','想要点击提交按钮');
+        };
+
+
+        // 创建一个按钮
+        var btnSubmit = new Ext.Button({
+          text:'提交',
+
+          // 当用户点击的时候(相当于js中的onclick事件),执行btnSubmitClick方法.
+          // handler是特殊的listener(listeners:click)
+          handler:btnSubmitClick
+        });
+
+        var btnReser = new Ext.Button({
+          text:'重置',
+
+          // 事件监听: 鼠标悬停(mouseover) 鼠标点击(click) 鼠标移出(mouseout)
+          listeners:{
+            'click':btnResetClick,
+            'mouseover':btnSubmitMouseOver
+          }
+        });
+
+        //  handler与listeners的区别：
+        //  handler:执行的是首发事件，click是button这个组件的首发事件。这就是handler的运行方式：被某个组件的首要event所触发。
+        //  handler是一个特殊的listener。
+        //  listener：是一个事件名 + 处理函数的组合，事件监听.按事件顺序执行.
+
+
+        var username = new Ext.form.TextField({
+            width:140,
+            allowBlank:false,
+            blankText:'用户名不能为空',
+            maxLength:20,
+            maxLengthText:'用户名太长',
+            minLength:4,
+            minLengthText:'用户名太短',
+            name:'username',
+            fieldLabel:'用户名'
+        });
+
+        var password = new Ext.form.TextField({
+            width:140,
+            allowBlank:false,
+            blankText:'密码不能为空',
+            maxLength:20,
+            maxLengthText:'密码过长',
+            minLength:4,
+            minLengthText:'密码少于四个字符',
+            name:'password',
+            fieldLabel:'密码'
+        });
+
+        var form = new Ext.form.FormPanel({
+            frame:true,
+            title:'表单标题',
+            style: 'margin:10px,20px,10px,20px',
+            html:'<div style="padding: 10px">有个表单</div>',
+
+            //表单中包含textField
+            items:[username,password],
+            buttons:[btnReser,btnSubmit]
+        });
+
+        var win = new Ext.Window({
+            title:'Ext窗口组件',
+            width:512,
+            height:256,
+            bodyStyle: {
+              padding:'5px'
+
+            },
+            buttonAlign:'right',
+            plain:false,
+            html:'<div><p>窗体组件内容</p></div>',
+            resizable:true,
+            modal:true,
+            closable:true,
+            maximizable:true,
+            minimizable:true,
+            closeAction:'hide',
+
+            //组件
+            items: form
+        });
+        win.show();
+
+    })
+</script>
+</body>
+</html>

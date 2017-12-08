@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ext Window</title>
+    <!--ExtJs框架开始-->
+    <script type="text/javascript" src="ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="ext/ext-all.js"></script>
+    <link rel="stylesheet" type="text/css" href="ext/resources/css/ext-all.css"/>
+    <!--ExtJs框架结束-->
+</head>
+<body>
+
+<script>
+
+    <!-- 主函数入口 -->
+    Ext.onReady(function () {
+
+        // 创建一个新的Window窗体对象
+        var win = new Ext.Window({
+            // 窗体对象属性:
+
+            //窗口标题
+            title:'Ext窗口组件',
+
+            //窗体宽高
+            width:512,
+            height:256,
+
+            //
+            bodyStyle:{
+              padding:'5px'
+                // marginLeft:'10px'
+            },
+
+            //窗体中button的对齐方式('left','center','right')(right)
+            buttonAlign:'right',
+
+            //窗体内容是否与窗体背景色一致(false)
+            plain:true,
+
+            //窗体内部的html内容 允许html标签
+            html:'<div><p>窗体组件内容</p></div>',
+
+            //是否可以调整窗口大小(true)
+            resizable:true,
+
+            //是否为模态窗(模态窗:打开模态窗后,不能对其他窗体、组件进行操作)
+            modal:true,
+
+            //是否可以关闭(显示关闭按钮)(true)
+            closable:true,
+
+            //是否可以最大化(显示最大化按钮)(false)
+            maximizable:true,
+
+            //是否可以最小化(显示最小化按钮)(false)
+            minimizable:true,
+
+            //窗体关闭动作('close'释放窗体所占内存，'hide'隐藏窗体)
+            closeAction:'hide'
+        });
+        win.show();
+
+    })
+</script>
+</body>
+</html>

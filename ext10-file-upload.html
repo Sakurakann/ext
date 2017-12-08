@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ext 文件上传 File-Upload</title>
+  <script src="ext/adapter/ext/ext-base.js"></script>
+  <script src="ext/ext-all.js"></script>
+  <script src="ext/src/locale/ext-lang-zh_CN.js"></script>
+
+  <link rel="stylesheet" href="ext/resources/css/ext-all.css" />
+</head>
+<body>
+
+<script>
+  Ext.onReady(function () {
+    Ext.QuickTips.init();
+    Ext.form.Field.prototype.msgTarget = 'side';
+
+    var imageBox = new Ext.BoxComponent({
+      autoEl:{
+        style:'width:150px;' +
+              'height:150px;' +
+              'margin-left: auto;' +
+              'margin-right: auto;' +
+              'border:1px solid #ccc;' +
+              'text-align:center;' +
+              'padding-top:20px;' +
+              'margin-bottom:10px',
+        tag:'div',
+        id:'imageBox',
+        html:'暂无'
+      }
+    });
+
+    var file = new Ext.form.TextField({
+      name:'imgFile',
+      id:'imgFile',
+      field:'文件上传',
+      inputType: 'file',// input属性 文件上传
+      allowBlank: false,
+      blankText: '请选择图片',
+      style:'margin-left: auto;margin-right: auto;'
+    });
+
+    var form = new Ext.form.FormPanel({
+      frame: true,
+      padding: '10px',
+      labelAlign: 'right',
+      labelWidth: '45px',
+      fileUpload : true, // 为上传文件加上headers 'Content-Type':'multipart/form-data
+      url:'http://localhost:9090/ext/common/fileUpload',
+      items: [imageBox,file],
+      buttons: [
+        {
+          text:'上传',
+          handler: function () {
+            if (form.getForm().isValid()) {
+              form.getForm().submit({
+                method:'POST',
+                // headers: {'Content-Type':'multipart/form-data; charset=UTF-8'},
+                waitTitle:'请稍等',
+                waitMsg:'正在上传...',
+                success: function (form, action) {
+                  Ext.MessageBox.alert('上传成功');
+                  alert(action.result.msg + '   0');
+                  var responseJson = Ext.util.JSON.decode(action.result);
+                  alert(responseJson + '   1');
+                  /*document.getElementById('imageBox').innerHTML =
+                    '<img style="width:150px;height:150px" src="'
+                    + action.result.path + '"/>';*/
+                },
+                failure: function (data) {
+                  Ext.MessageBox.alert('上传失败',data.msg);
+                }
+              })
+            }
+          }
+        },
+
+        {
+         text: '重置',
+         handler: function () {
+           form.getForm().reset();
+         }
+        }
+      ]
+    });
+
+    var mainWindow = new Ext.Window({
+      frame: true,
+      title: '文件上传',
+      width: '50%',
+      height: '30%',
+      modal: true,
+      resizable: true,
+      items: [form]
+    });
+    mainWindow.show();
+
+  })
+
+
+</script>
+</body>
+</html>

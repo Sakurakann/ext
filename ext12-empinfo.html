@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ext 信息表</title>
+
+  <script src="ext/adapter/ext/ext-base.js"></script>
+  <script src="ext/ext-all.js"></script>
+  <script src="ext/src/locale/ext-lang-zh_CN.js"></script>
+
+  <!-- 引入文本编辑器 -->
+  <script src="kindeditor/kindeditor.js" type="text/javascript"></script>
+
+  <link rel="stylesheet" href="ext/resources/css/ext-all.css" />
+  <style>
+    .x-form-unit{
+      height: 22px;
+      line-height: 22px;
+      padding-left: 2px;
+      display: inline-block;
+    }
+
+  </style>
+</head>
+<body>
+
+<script>
+
+  // 重写
+  Ext.override(Ext.form.TextField,{
+    unitText: '',
+    // 渲染效果
+    onRender: function (ct, position) {
+      Ext.form.TextField.superclass.onRender.call(this, ct, position);
+
+      // 如果组件定义中指定了 unitText(单位),在文本框后增加显示
+      if (this.unitText != '') {
+        this.unitEl = ct.createChild({
+          tag: 'div',
+          html: this.unitText
+        });
+
+        this.unitEl.addClass('x-form-unit');
+
+        //增加单位名称的同时 按照单位名称大小减小文本框的长度 使其中长度为组件指定长度
+        this.width -= this.unitText.replace(/[^\x00-\xff]/g, "xx").length * 6 + 2;
+
+        // 修改错误提示图标的位置
+        this.alignErrorIcon = function () {
+          // 偏移量
+          this.errorIcon.alignTo(this.unitEl, 'tl-tr', [2, 0])
+        };
+
+      }
+
+    }
+  });
+
+  Ext.onReady(function () {
+    Ext.QuickTips.init();
+    Ext.form.Field.prototype.msgTarget = 'side';
+
+
+
+    // 政治面貌
+    var political = new Ext.data.ArrayStore({
+      fields:['id', 'value'],
+      data: [[1, '共青团员'], [2, '共产党员'], [3, '其他党派'], [4, '群众']]
+    });
+
+    var col_1 = {
+      layout: 'form',
+      columnWidth: .28,
+      items: [
+        new Ext.form.TextField({
+          name: 'empName',
+          id: 'empName',
+          width: 128,
+          allowBlank: false,
+          minLength: 2,
+          minLengthText: '姓名不能少于2个字符',
+          fieldLabel: '姓名'
+        }),
+        new Ext.form.ComboBox({
+          name: 'political',
+          fieldLabel: '政治面貌',
+          allowBlank: false,
+          editable: false,
+          width: 128,
+
+          mode: 'local',
+          store: political,
+          displayField: 'value',
+          valueField: 'id',
+
+          triggerAction: 'all',
+          emptyText: '请选择..',
+          blankText: '请选择政治面貌'
+        }),
+        new Ext.form.TextField({
+          name: 'graduateSchool',
+          id: 'graduateSchool',
+          fieldLabel: '毕业院校',
+          width: 128,
+          minLength: 2,
+          emptyText: '请输入学校名称'
+        }),
+        new Ext.form.TextField({
+          name: 'address',
+          id: 'address',
+          width: 128,
+          fieldLabel: '通讯地址'
+        })
+      ]
+    };
+
+    var col_2 = {
+      layout: 'form',
+      columnWidth: .28,
+      items:[
+        new Ext.form.RadioGroup({
+          width: 128,
+          fieldLabel: '性别',
+          style: 'padding-top:2px;height:13px;',
+          items: [
+            {
+              style:'margin-top: 2px',
+              name: 'sex',
+              inputValue: 1,
+              boxLabel: '男',
+              check: true
+            },
+
+            {
+              name: 'sex',
+              inputValue: 0,
+              boxLabel: '女'
+            }
+          ]
+        }),
+
+        new Ext.form.NumberField({
+          name: 'height',
+          id: 'height',
+          fieldLabel: '身高',
+          unitText: 'cm',
+          width: 128,
+          decimalPrecision: 1,
+          minValue: 1,
+          maxValue: 300
+        }),
+
+        new Ext.form.TextField({
+          name: 'professional',
+          id: 'professional',
+          fieldLabel: '所学专业',
+          width: 128,
+          emptyText: '专业'
+        }),
+
+        new Ext.form.NumberField({
+          name: 'phone',
+          id: 'phone',
+          fieldLabel: '联系电话',
+          width: 128,
+          decimalPrecision: 0,
+          maxLength: 13
+        })
+      ]
+    };
+
+    var col_3 = {
+      columnWidth: .28,
+      layout: 'form',
+      items: [
+        new Ext.form.TextField({
+          name: 'age',
+          id: 'age',
+          fieldLabel: '年龄',
+          unitText: '岁',
+          width: 128,
+          maxLength: 3,
+          minLength: 2
+        }),
+        new Ext.form.TextField({
+          name: 'wight',
+          id: 'wight',
+          fieldLabel: '体重',
+          width: 128,
+          unitText: 'kg',
+          minLength: 2
+        }),
+        new Ext.form.DateField({
+          name: 'graduationDate',
+          id: 'graduationDate',
+          fieldLabel: '毕业日期',
+          xtype: 'datefield',
+          width: 150,
+          height: 27,
+          labelWidth:70,
+          format: 'Y-m-d',
+          emptyText:'请选择毕业日期'
+        })
+      ]
+    };
+
+    var col_4 = {
+      layout: 'form',
+      columnWidth: .16,
+      items: [
+        new Ext.BoxComponent({
+          autoEl:{
+            style: 'width:65px;' +
+                   'height:60px;' +
+                   'margin:0px auto;' +
+                   'border:1px solid #ccc;' +
+                   'text-align:center;' +
+                   'padding-top:10px;' +
+                   'margin-bottom:8px',
+            tag: 'div',
+            html: '暂无'
+          }
+        }),
+        new Ext.Button({
+          type: 'button',
+          name: 'commonBtn',
+          id: 'commonBtn',
+          style: 'margin: auto',
+          text: '上传图像'
+        })
+      ]
+
+
+    };
+
+
+    new Ext.Window({
+      title: '信息表',
+      modal: true,
+      frame: true,
+      width: 860,
+      height: 540,
+      items: [
+        new Ext.form.FormPanel({
+          bufferResize: true,
+          frame: true,
+          title: '信息表',
+          style: 'margin:10px',
+          labelAlign: 'right',
+          labelWidth: 60,
+          items: [
+            {
+              layout: 'column',
+              items: [col_1, col_2, col_3, col_4]
+            },
+            new Ext.form.CheckboxGroup({
+              fieldLabel: '招聘来源',
+              style: 'padding-top:3px;height:17px;width:40%',
+              name: 'infoFrom',
+              id: 'infoFrom',
+              items: [
+                {
+                  boxLabel: '报纸',
+                  inputValue: '0'
+                },{
+                  boxLabel: '网站',
+                  inputValue: '1'
+                },{
+                  boxLabel: '校园',
+                  inputValue: '2'
+                },{
+                  boxLabel: '人才市场',
+                  inputValue: '3'
+                }
+              ]
+            }),
+            new Ext.form.HtmlEditor({
+              name: 'otherInfo',
+              id: 'otherInfo',
+              fieldLabel: '个人介绍',
+              width: 740
+            })
+          ]
+        })
+      ]
+    }).show();
+  })
+</script>
+
+</body>
+</html>

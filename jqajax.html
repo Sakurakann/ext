@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>jquery ajax</title>
+  <script src="jQuery/jquery-3.2.1.js"></script>
+</head>
+<body>
+<script>
+
+  var data = {
+    'parentId':1
+  };
+
+  function get() {
+    $.ajax({
+      url:'http://localhost:9090/ext/ext/getMapdis',
+      dataType:'json',
+      type:'POST',
+      data: JSON.stringify(data),// 400 error
+      contentType:'application/json;charset=UTF-8', // 415 error
+      success:function (data) {
+        $.each(data, function (index, item) {
+          alert(item.mapId + ' ' + item.mapName)
+        })
+      },
+      failure:function () {
+        alert('请求失败')
+      }
+    })
+  }
+
+  get();
+
+</script>
+</body>
+</html>

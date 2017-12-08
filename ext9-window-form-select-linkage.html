@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ext 联动 linkage</title>
+  <script src="ext/adapter/ext/ext-base.js"></script>
+  <script src="ext/ext-all.js"></script>
+  <script src="ext/src/locale/ext-lang-zh_CN.js"></script>
+
+  <link rel="stylesheet" href="ext/resources/css/ext-all.css" />
+
+</head>
+<body>
+<script>
+
+  var data = {
+      "parentId":0
+    };
+
+  areaStoreUrlParam = null;
+
+  Ext.onReady(function () {
+    Ext.QuickTips.init();
+    Ext.form.Field.prototype.msgTarget = 'side';
+
+    /*var jsonData = new Ext.data.JsonStore({
+      autoLoad:true,
+      url:'http://localhost:9090/ext/ext/getMapdis',
+      fields:['mapId', 'mapName', 'parentId']
+    });*/
+
+    var ajaxBtn = function () {
+      Ext.Ajax.request({
+        url: 'http://localhost:9090/ext/ext/getMapdis',
+        headers: {
+          "Content-Type":"application/json; charset=utf8",
+          "Accept":"application/json"
+        }, // error 415
+
+        params: Ext.util.JSON.encode(data), // 解决400
+
+        method: 'POST',
+
+        callback: function (options, success, response) {
+          if (success) {
+
+            var responseJson = Ext.util.JSON.decode(response.responseText);
+            /*for (var i = 0; i < responseJson.length; i++) {
+              alert(responseJson[i].mapName + ' parent '
+                + responseJson[i].parentId);
+            }*/
+
+            responseJson.forEach(function (value) {
+              alert(value.mapName);
+            });
+
+
+            Ext.Msg.alert(responseJson.length);
+          } else {
+            Ext.Msg.confirm('失败',
+              '请求超时或网络故障,错误编号：[' + response.status + ']是否要重新发送？', function (btn) {
+                if (btn == 'yes') {
+                  Ext.Ajax.request(options);
+                }
+              });
+          }
+        }
+      });
+    };
+
+    var dataCityStore = new Ext.data.JsonStore({
+      /*proxy:new Ext.data.HttpProxy({
+        url:'http://localhost:9090/ext/ext/getMapdis',
+        params:{'parentId':0},
+        method:'POST'
+      })*/
+      autoLoad:true,
+      url:'http://localhost:9090/ext/ext/getMapdis?parentId=0',
+      headers: {
+        "Content-Type":"application/json; charset=utf8",
+        "Accept":"application/json"
+      },
+      fields: ['mapId', 'mapName', 'parentId'],
+      listeners: {
+        'render': function () {
+          dataCityStore.load();
+        }
+      }
+    });
+
+
+
+    var dataAreaStore = new Ext.data.JsonStore({
+      id:'dataAreaStore',
+      url:'http://localhost:9090/ext/ext/getMapdis',
+      headers: {
+        "Content-Type":"application/json; charset=utf8",
+        "Accept":"application/json"
+      },
+      fields: ['mapId', 'mapName', 'parentId']
+    });
+
+    var btnGetMap = new Ext.Button({
+      text:'获取数据',
+      handler:ajaxBtn
+    });
+
+    var comboboxP0 = new Ext.form.ComboBox({
+      id:'comboboxP0',
+      fieldLabel: '一级区域',
+      store:dataCityStore,
+      displayField: 'mapName',
+      valueField: 'mapId',
+      triggerAction: 'all',
+      emptyText: '请选择',
+      editable: false,
+      mode: 'local'
+    });
+
+    var comboboxP1 = new Ext.form.ComboBox({
+      id:'comboboxP1',
+      fieldLabel: '二级区域',
+      store:dataAreaStore,
+      displayField: 'mapName',
+      valueField: 'mapId',
+      triggerAction: 'all',
+      emptyText: '请选择',
+      editable: false,
+      mode: 'local'
+    });
+
+    comboboxP0.on('select', function () {
+      dataAreaStore.baseParams.parentId = comboboxP0.getValue();
+      comboboxP1.setValue('');
+      dataAreaStore.load();
+    });
+
+
+    var form = new Ext.form.FormPanel({
+      frame:true,
+      padding:'10px',
+      labelWidth:'40px',
+      labelAlign:'right',
+      items:[comboboxP0,comboboxP1],
+      buttons: [btnGetMap]
+    });
+
+
+
+    var mainwindow = new Ext.Window({
+      width:'50%',
+      height:'30%',
+      modal:true,
+      frame:true,
+      items:[form]
+    });
+    mainwindow.show();
+
+  })
+
+</script>
+</body>
+</html>

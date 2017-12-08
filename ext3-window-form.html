@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ext Window-Form</title>
+    <!--ExtJs框架开始-->
+    <script type="text/javascript" src="ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="ext/ext-all.js"></script>
+    <link rel="stylesheet" type="text/css" href="ext/resources/css/ext-all.css"/>
+    <!--ExtJs框架结束-->
+</head>
+<body>
+
+<script>
+
+    <!-- 主函数入口 -->
+    Ext.onReady(function () {
+
+        //创建新的form对象
+        var form = new Ext.form.FormPanel({
+            //True表示为面板的边框外框可自定义的，false表示为边框可1px的点线
+            frame:true,
+
+            //表单标题,如果不加的话,不会在表单上方生成一个浅蓝色表单标题栏
+            title:'表单标题',
+
+            //表单窗体格式
+            style: 'margin:10px,20px,10px,20px',
+
+            //表单内容
+            html:'<div style="padding: 10px">有个表单</div>'
+
+        });
+
+        var win = new Ext.Window({
+            title:'Ext窗口组件',
+            width:512,
+            height:256,
+            bodyStyle: {
+                padding:'5px'
+
+            },
+            buttonAlign:'right',
+            plain:false,
+            html:'<div><p>窗体组件内容</p></div>',
+            resizable:true,
+            modal:true,
+            closable:true,
+            maximizable:true,
+            minimizable:true,
+            closeAction:'hide',
+
+            //组件
+            items: form
+        });
+        win.show();
+
+    })
+</script>
+</body>
+</html>

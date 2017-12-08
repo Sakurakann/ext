@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ext 选择</title>
+
+  <script src="ext/adapter/ext/ext-base.js"></script>
+  <script src="ext/ext-all.js"></script>
+  <script src="ext/src/locale/ext-lang-zh_CN.js"></script>
+
+  <link rel="stylesheet" href="ext/resources/css/ext-all.css" />
+</head>
+<body>
+<input type="text" name="" id="" placeholder="请求请求群群群群群">
+<script>
+  Ext.onReady(function(){
+    Ext.QuickTips.init();
+    Ext.form.Field.prototype.msgTarget = 'side';
+
+    var radio = new Ext.form.RadioGroup({
+      fieldLabel:'记住密码',
+      width:100,
+
+      vertical:true,
+
+      items:[
+        {
+          name:'rememberMe',
+          inputValue:1,
+          fieldLabel:'是',
+          checked:true
+        },
+
+        {
+          name:'rememberMe',
+          inputValue:0,
+          fieldLabel:'否'
+        }
+      ]
+    });
+    radio.on('change',function (radiogp,checked) {
+      alert(checked.getRawValue())
+    });
+
+    // 模拟数据 数组数据源
+    var combostore = new Ext.data.ArrayStore({
+
+      // 包含两列: id和name
+      fields:['id', 'name'],
+
+      // 包含数据:数据顺序与fields定义的字段顺序相同,使用[] 包裹,类似json格式
+      data:[
+        [1, '团员'], [2, '党员'], [3, '其他']
+      ]
+    });
+
+    // 创建一个下拉列表对象
+    var combobox = new Ext.form.ComboBox({
+
+      mode:'local',
+
+      // 显示名
+      fieldLabel:'政治面貌',
+      width:100,
+
+      // 数据源( *必须元素)
+      store:combostore,
+
+      // 值 对应combostore里的字段名的对应值( 必须元素)
+      valueField:'id',
+
+      // 显示值 对应combostore里的相应字段名的对应值( 必须元素)
+      displayField:'name',
+
+      // 下拉点击触发属性,all为每次下拉均显示全部选项,默认为query,
+      // 为query时，你选择某个值后，再此下拉时，只出现匹配选项,建议设置为all
+      triggerAction:'all',
+
+      // 类似于placeholder
+      emptyText:'请选择',
+      allowBlank:false,
+      blankText:'请选择政治面貌',
+      editable:false
+    });
+    combobox.on('change',function () {
+      alert(combobox.getValue())
+    });
+
+    var form = new Ext.form.FormPanel({
+      frame:true,
+      labelAlign:'right',
+      labelWidth:'40px',
+      buttonAlign:'right',
+      padding:'10px',
+      items:[radio,combobox],
+      buttons:[]
+    });
+
+    var mainWindow = new Ext.Window({
+      title:'选择',
+      frame:true,
+      width:'50%',
+      height:'30%',
+      modal:true,
+      items:[form]
+    });
+    mainWindow.show();
+  })
+
+</script>
+</body>
+</html>
