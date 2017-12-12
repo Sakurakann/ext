@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ext 网格 Grid</title>
+  <script src="ext/adapter/ext/ext-base.js"></script>
+  <script src="ext/ext-all.js"></script>
+  <script src="ext/src/locale/ext-lang-zh_CN.js"></script>
+
+  <link rel="stylesheet" href="ext/resources/css/ext-all.css" />
+</head>
+<body>
+<div id="gridDiv" style="width: 900px; height: 500px; margin: auto"></div>
+
+<script>
+  Ext.onReady(function () {
+    var jsonStore = new Ext.data.JsonStore({
+      data: [
+        { id: 1, name: '张', sex: 1, birth: '01/01/01' },
+        { id: 2, name: '陈', sex: 0, birth: '02/02/02' },
+        { id: 3, name: '李', sex: 1, birth: '03/03/03' }
+      ],
+      fields: ['id', 'name', 'sex', {name: 'birth', type: 'date', dateformat: 'Y/m/d'}]
+    });
+    
+    // 复选框
+    // 要在两个地方引用,一是列模型,@see column line:41; 二是GridPanel @see grid line:81
+    var sm = new Ext.grid.CheckboxSelectionModel();
+    
+    // 性别渲染 平时写的时候大多数只传value，例如： var sexrender = function(value){处理方法}
+    var sexRender = function (value, metaData, record, rowIndex, colIndex, store) {
+      if (value === 0) {
+        metaData.attr = 'style="font-weight:bold";'; // 加粗
+        return '男';
+      } else {
+        return '女';
+      }
+    };
+
+    // 列模型创建 这个是定义gird应该有几列
+    var column = new Ext.grid.ColumnModel({
+      // 定义列
+      columns: [
+        sm, // 第一列为复选框
+        { header: '编号', dataIndex: 'id', sortable: true }, //第二列
+        { header: '姓名', dataIndex: 'name' }, // 第三列
+        { header: '性别', dataIndex: 'sex', renderer: sexRender }, // 第四列
+        { header: '出生日期', dataIndex: 'birth', renderer:
+          Ext.util.Format.dateRenderer('Y-m-d')} // 第五列 指定渲染格式.
+      ]
+    });
+
+    // 定义按钮
+    var btn = new Ext.Toolbar.Button({
+      text: '查看选中项',
+      handler: function () {
+        var row = grid.getSelectionModel().getSelections();
+        for (var i = 0; i < row.length; i++) {
+          alert(row[i].get('id'));
+        }
+      }
+    });
+
+    // 分页控件
+    var pager = new Ext.PagingToolbar({
+      pageSize: 2, // 页面总数
+      store: jsonStore, // 分页的数据源
+      listeners: { // 链接后台数据库动态绑定数据 该处只是模拟 返回false 不继续进行数据刷新
+        beforechange: function (bbar, params) {
+          var grid = bbar.ownerCt;
+          var store = grid.getStore();
+          var start = params.start; // 起始数据的索引号
+          var limit = params.limit; // 数据数量大小
+          alert(store.getCount());
+          return false;
+        }
+      }
+    });
+
+    // 列表
+    var grid = new Ext.grid.GridPanel({
+      // selModel 的简写方式
+      // AbstractSelectionModel的子类，以为Grid提供选区模型
+      sm: sm,
+      title: '网格面板 GridPanel',
+      height: 200,
+      store: jsonStore,
+      tbar: [btn], // topBar 顶部栏
+      // 面板底部的工具条。此项可以是Ext.Toolbar的实例、工具条的配置对象，
+      // 或由按钮配置项对象构成的数组，以加入到工具条中
+      bbar: pager, // bottomBar 底部栏
+      colModel: column // 列表的头和列
+    });
+
+    // 表单
+    var form = new Ext.form.FormPanel({
+      frame: true,
+      fileUpload: true,
+      url: '',
+      title: '这是一个表单',
+      style: 'margin: 10px',
+      items: [grid],
+      renderTo: 'gridDiv'
+    })
+
+  })
+</script>
+</body>
+</html>

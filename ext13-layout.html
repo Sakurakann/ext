@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ext 页面布局 Layout</title>
+
+  <!--
+
+    absolute
+    accordion  手风琴
+    anchor     锚点
+    border     边界
+    card       卡牌
+    column     行
+    fit        填充
+    form       表单
+    table      表格
+
+  -->
+  <script src="ext/adapter/ext/ext-base.js"></script>
+  <script src="ext/ext-all.js"></script>
+  <script src="ext/src/locale/ext-lang-zh_CN.js"></script>
+
+  <link rel="stylesheet" href="ext/resources/css/ext-all.css" />
+</head>
+<body>
+
+<div id="containerLayout" style="float: left;
+  width: 300px; border: #a3bad9 dashed 1px;margin-left: 10px">
+  ContainerLayout:垂直方式放置
+</div>
+
+<div id="formLayout" style="float: left;
+  width:300px; border: #a3bad9 groove 1px;padding:10px;margin-left: 10px"></div>
+
+<div id="columnLayout" style="float: left;
+  width:600px; border:#004444 -moz-bg-outset 1px; margin: 0 0 0 10px"></div>
+
+<div id="borderLayout" style=" float: left;
+  width:1200px; border:#004444 dashed 1px; padding: 10px; margin: 10px"></div>
+
+<div id="accordionLayout" style=" float: left;
+  width:300px; border:#004444 dashed 1px; padding: 10px; margin: 10px"></div>
+
+<div id="fitLayout" style=" float: left;
+  width:300px; border:#004444 dashed 1px; padding: 10px; margin: 10px"></div>
+
+<div id="noFitLayout" style=" float: left;
+  width:300px; border:#004444 dashed 1px; padding: 10px; margin: 10px"></div>
+
+<div id="tableLayout" style=" float: left;
+  width:300px; border:#004444 dashed 1px; padding: 10px; margin: 10px"></div>
+
+<div id="cardLayout" style=" float: left;
+  width:900px; border:#004444 dashed 1px; padding: 10px; margin: 10px"></div>
+
+<script>
+
+  /*
+  * renderTo:<DOM节点的ID>
+  * 容器渲染的那个节点的id，或是DOM节点，又或者是与DIV相当的现有元素。
+  * 使用了这项配置后，不需要执行render()的方法。
+  */
+
+  Ext.onReady(function () {
+
+    // ---------- ContainerLayout ---------- //
+    // 默认布局方式,将内部组件以垂直方式叠加.其他布局继承该类进行功能扩展.
+    new Ext.Container({
+      layout: 'form',
+      items: [
+        new Ext.BoxComponent({
+          autoEl: {
+            tag: 'div',
+            style: 'background:lightyellow;width:300px',
+            html: 'box0'
+          }
+        }),
+        new Ext.BoxComponent({
+          autoEl: {
+            tag: 'div',
+            style: 'background:lightblue;width:300px',
+            html: 'box1'
+          }
+        }),
+        new Ext.BoxComponent({
+          autoEl: {
+            tag: 'div',
+            // style: 'background:gray,width:300px,height:30px', 上一个错误!!! 分割符
+            style: 'background:gray;width:300px;color:#fff',
+            html: 'box2'
+          }
+        })
+      ],
+      renderTo: 'containerLayout'
+    });
+
+    // ---------- FormLayout ---------- //
+    // 产生类似表单的外观,将内部组件以垂直方式叠加
+    new Ext.Panel({
+      width: 300,
+      title: 'FormLayout',
+      layout: 'form',
+      frame: true,
+      items: [
+        new Ext.form.TextField({
+          fieldLabel: 'Username'
+        }),
+        new Ext.form.TextField({
+          fieldLabel: 'Password'
+        }),
+        new Ext.form.TextField({
+          fieldLabel: 'E-Mail'
+        })
+      ],
+      renderTo: 'formLayout'
+    });
+
+    // ---------- ColumnLayout ---------- //
+    // 将组件以水平方式排列
+    new Ext.Panel({
+      title: 'ColumnLayout',
+      layout: 'column',
+      width: '600',
+      items: [
+        new Ext.form.FormPanel({
+          frame: true,
+          title: '第一列',
+          columnWidth: .33,
+          labelWidth: 55,
+          items: [
+            new Ext.form.TextField({
+              fieldLabel: 'Username'
+            })
+          ]
+        }),
+        new Ext.form.FormPanel({
+          frame: true,
+          title: '第二列',
+          columnWidth: .33,
+          labelWidth: 55,
+          items: [
+            new Ext.form.TextField({
+              fieldLabel: 'Password'
+            })
+          ]
+        }),
+        new Ext.form.FormPanel({
+          frame: true,
+          title: '第三列',
+          columnWidth: .34,
+          labelWidth: 55,
+          labelAlign: 'right',
+          items: [
+            new Ext.form.TextField({
+              fieldLabel: 'E-Mail'
+            })
+          ]
+        })
+      ],
+      renderTo: 'columnLayout'
+    });
+
+    // ---------- BorderLayout ---------- //
+    // 边界布局,东西南北中 Panel 面板
+    new Ext.Panel({
+      title: 'BorderLayout',
+      width: 1200,
+      height: 300,
+      layout: 'border',
+      items: [
+        new Ext.Panel({
+          title: '北 North',
+          // region 地区,区域
+          region: 'north',
+          html: '此处应有导航,菜单等'
+        }),
+        new Ext.Panel({
+          title: '南 South',
+          // region 地区,区域
+          region: 'south',
+          html: '此处应有版权,相关,链接等'
+        }),
+        new Ext.Panel({
+          title: '西 West',
+          // region 地区,区域
+          region: 'west',
+          html: '此处应有树形菜单或者手风琴菜单等'
+        }),
+        new Ext.Panel({
+          title: '东 East',
+          // region 地区,区域
+          region: 'east',
+          html: '常用功能或者空白'
+        }),
+        new Ext.Panel({
+          title: '中 Center',
+          // region 地区,区域
+          region: 'center',
+          html: '主要内容'
+        })
+      ],
+      renderTo: 'borderLayout'
+    });
+
+    // ---------- AccordionLayout ---------- //
+    // 手风琴布局
+    new Ext.Panel({
+      title: 'AccordionLayout',
+      layout: 'accordion',
+
+      layoutConfig: {
+        // 布局配置
+        // see @Ext.layout.Accordion
+        activeOnTop: false,  //设置打开的字面板置顶
+        fill: true,         //字面板充满父面板的剩余空间
+        hideCollapseTool: false,   //显示“展开收缩”按钮
+        titleCollapse: true,      //允许通过点击子面板的标题来展开或者收缩面板
+        animate: true             //使用动画效果
+      },
+      height: 200,
+      items: [
+        new Ext.Panel({
+          title: 'User Management',
+          items:[
+            new Ext.BoxComponent({
+              autoEl: {
+                tag: 'div',
+                html: '用户1管理'
+              }
+            })
+          ]
+        }),
+
+        new Ext.Panel({
+          title: 'Role Management',
+          items:[
+            new Ext.BoxComponent({
+              autoEl: {
+                tag: 'div',
+                html: '角色1管理'
+              }
+            }),
+            new Ext.BoxComponent({
+              autoEl: {
+                tag: 'div',
+                html: '角色2管理'
+              }
+            })
+          ]
+        }),
+
+        new Ext.Panel({
+          title: 'System Management',
+          items:[
+            new Ext.BoxComponent({
+              autoEl: {
+                tag: 'div',
+                html: '系统1管理'
+              }
+            }),
+            new Ext.BoxComponent({
+              autoEl: {
+                tag: 'a',
+                html: '百度一下',
+                href: 'http://www.baidu.com'
+              }
+            })
+          ]
+        })
+      ],
+      renderTo: 'accordionLayout'
+    });
+
+    // ---------- FitLayout ---------- //
+    // 填充布局
+    new Ext.Panel({
+      title: 'FitPanel',
+      width: 300,
+      height: 100,
+      layout: 'fit',
+      renderTo: 'fitLayout',
+      items: [
+        new Ext.Panel({
+          bodyStyle: 'background:lightblue',
+          html: '使用fit布局,第二个panel不会显示'
+        }),
+        new Ext.Panel({
+          bodyStyle: 'background:lightgray',
+          html: '第二个panel'
+        })
+      ]
+    });
+
+    new Ext.Panel({
+      title: 'NOFitPanel',
+      width: 300,
+      height: 100,
+      //layout: 'fit', 不使用fit布局
+      renderTo: 'noFitLayout',
+      items: [
+        new Ext.Panel({
+          bodyStyle: 'background:lightblue',
+          html: '不使用fit布局'
+        }),
+        new Ext.Panel({
+          bodyStyle: 'background:lightgray',
+          html: '第二个panel'
+        })
+      ]
+    });
+
+    // ---------- TableLayout ---------- //
+    // 表格布局
+    new Ext.Panel({
+      title: 'TableLayout',
+      layout: 'table',
+      renderTo: 'tableLayout',
+      layoutConfig: {
+        columns:3 // 设置 3列
+      },
+      defaults: {
+        width: 100,
+        height: 30,
+        autoEl: 'center'
+      },
+      defaultType: 'panel',
+      items: [
+        {html: '第一行第一列'},
+        {html: '第一行第二列'},
+        {html: '行[1,2]列3', rowspan: 2, height: 60},
+        {html: '行2列[1,2]', colspan: 2, width: 200}
+      ]
+    });
+
+    // ---------- TableLayout ---------- //
+    // 卡片式布局
+
+    var navHandler = function(direction){
+    };
+
+    var card = new Ext.Panel({
+      title: '向导的演示 Example Wizard',
+      layout:'card',
+      renderTo: 'cardLayout',
+      activeItem: 0, // 激活的item不能缺少 make sure the active item is set on the container config!
+      bodyStyle: 'padding:15px',
+      defaults: {
+        // 每个子组件都有效 applied to each contained panel
+        border:false
+      },
+      // 简单的导航按钮，可以扩展更多 just an example of one possible navigation scheme, using buttons
+      bbar: [
+        {
+          id: 'move-prev',
+          text: '后退',
+          text: 'Back',
+          //handler: navHandler.createDelegate(this, [-1]),
+          handler: changeTabMinus
+          //disabled: true
+        },
+        '->', // 表示会占据所有空白的区域 greedy spacer so that the buttons are aligned to each side
+        {
+          id: 'move-next',
+          text: '前进 Next',
+          //handler: navHandler.createDelegate(this, [1])
+          handler: changeTabPlus
+        }
+      ],
+      // 内面的面板，就是“卡片” the panels (or "cards") within the layout
+      items: [
+        {
+          id: 'card-0',
+          html: '欢迎来到向导！<h1>Welcome to the Wizard!</h1><p>Step 1 of 3</p>'
+        },
+        {
+          id: 'card-1',
+          html: '<p>Step 2 of 3</p>'
+        },
+        {
+          id: 'card-2',
+          html: '祝贺！Step 3 of 3 - 完成！<h1>Congratulations!</h1>' +
+          '<p>Step 3 of 3 - Complete</p>'
+        }
+      ]
+    });
+
+    function changeTabPlus() {
+      var p = card.layout.activeItem.id.substring(5);  //获取当前面板的id
+      p++;
+      if(p > 2 || p < 0) p = 0;   //如果p大于2，就设置p为0
+      card.getLayout().setActiveItem(p);
+    }
+
+    function changeTabMinus() {
+      var p = card.layout.activeItem.id.substring(5);  //获取当前面板的id
+      p--;
+      if(p > 2 || p < 0) p = 2;   //如果p大于2，就设置p为0
+      card.getLayout().setActiveItem(p);
+    }
+
+  });
+</script>
+
+</body>
+</html>
