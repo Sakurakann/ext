@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ext 树 Tree</title>
+  <script src="ext/adapter/ext/ext-base.js"></script>
+  <script src="ext/ext-all.js"></script>
+  <script src="ext/src/locale/ext-lang-zh_CN.js"></script>
+
+  <link rel="stylesheet" href="ext/resources/css/ext-all.css" />
+</head>
+<body>
+<div id="extTree">
+  
+</div>
+<script>
+  Ext.onReady(function () {
+
+    // json格式节点数据
+    var nodeData = {
+      text: 'Root',
+      expanded: true, // 扩大 是否加载时展开子节点 默认为false
+
+      leaf: false, // 是否为叶子节点,
+      // 如果设置为false但是没有相children定义,在展开时会显示一直加载
+      // 有children定义,但是其中的数据为空是可以完成加载的,展开时为空.
+
+      children: [
+        // 通过 iconCls 可以列换树型菜单的图标,通过css改变.Ext提供默认"文件夹"/"列表"图标
+        { text: 'Root下Node1[user图标]', leaf: true, iconCls: 'nodeicon' },
+        { text: 'Root下Node2', leaf: false, children: [
+            { text: 'Node2下Node2-1', leaf: true },
+            { text: 'Node2下Node2-2', leaf: false, children: [
+                {text: 'Node2-2下Node2-2-1',leaf: true},
+                {text: 'Node2-2下Node2-2-2',leaf: false},
+                {text: 'Node2-2下Node2-2-3',leaf: false, children:[]}
+              ]}
+          ]},
+        { text: 'Root下Node3', leaf: true}
+      ]
+    };
+
+
+    // 从本地加载节点树数据
+    var treeLocal = new Ext.tree.TreePanel({
+      title: 'TreePanelLocal',
+
+      rootVisible: true, // 根节点可见性 默认为true 根节点可见
+      // 有时候我们不想显示根节点，可以通过rootVisible设置他的可见性。
+      // 在本例中没有隐藏根
+
+      root: nodeData
+    });
+
+    // 从远程服务端请求节点树数据 返回json格式
+    var treeRemote = new Ext.tree.TreePanel({
+      title: 'TreePanelService',
+      root: { text: '根', expanded: false },
+
+      // 树数据载入组件, 通过url寻找service端返回的json,并且自动转换成treeNode
+      loader: new Ext.tree.TreeLoader({
+        url: '' // 返回数据格式如上 children: json格式
+      })
+    });
+
+    new Ext.form.FormPanel({
+      frame: true,
+      title: '表单',
+      style: 'margin: 10px',
+      renderTo: 'extTree',
+      items: [treeLocal, treeRemote],
+      buttons: [
+        {
+          text: '获取选中项',
+          handler: function () {
+            // 获取选中项
+            var selectNode = treeLocal.getSelectionModel().getSelectedNode();
+            // 没有选的话,显示根节点的文本.
+            alert('TreePanelLocal: ' + (selectNode === null ? treeLocal.text
+              : selectNode.text))
+          }
+        }
+      ]
+    });
+  })
+</script>
+</body>
+</html>

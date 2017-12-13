@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ext Ajax数据交互</title>
+  <script src="ext/adapter/ext/ext-base.js"></script>
+  <script src="ext/ext-all.js"></script>
+  <script src="ext/src/locale/ext-lang-zh_CN.js"></script>
+
+  <link rel="stylesheet" href="ext/resources/css/ext-all.css" />
+</head>
+<body>
+<div id="ajaxComponent"></div>
+
+<div id="remoteAjaxComponent"></div>
+
+<script>
+  Ext.onReady(function () {
+    // 模拟数据
+    var data = {
+      name: 'Jack Slocum',
+      title: 'Lead Developer',
+      company: 'Ext JS, LLC',
+      email: 'jack@extjs.com',
+      address: '4 Red Bulls Drive',
+      city: 'Cleveland',
+      state: 'Ohio',
+      zip: '44102',
+      drinks: ['Red Bull', 'Coffee', 'Water'],
+      kids: [{
+        name: 'Sara Grace',
+        age:2
+      },{
+        name: 'Zachary',
+        age:1
+      },{
+        name: 'John James',
+        age:0
+      }]
+    };
+
+    var panel = new Ext.Panel({
+      title: '数据交互与模板显示',
+      frame: true,
+      renderTo: 'ajaxComponent'
+    });
+
+    var xtpl = new Ext.XTemplate(
+      '<table id="template" class="template">',
+        '<tr>',
+          '<td>姓名</td>',
+          '<td>{name}</td>',
+        '</tr>',
+        '<tr>',
+          '<td>职位</td>',
+          '<td>{title}</td>',
+        '</tr>',
+        '<tr>',
+          '<td>公司</td>',
+          '<td>{company}</td>',
+        '</tr>',
+        '<tr>',
+          '<td>邮箱</td>',
+          '<td>{email}</td>',
+        '</tr>',
+        '<tr>',
+          '<td>地址</td>',
+          '<td>{address}</td>',
+        '</tr>',
+        '<tr>',
+          '<td>省/市</td>',
+          '<td>{city}</td>',
+        '</tr>',
+        '<tr>',
+          '<td>州</td>',
+          '<td>{state}</td>',
+        '</tr>',
+        '<tr>',
+          '<td>邮编</td>',
+          '<td>{zip}</td>',
+        '</tr>',
+
+        // 循环数组子对象 tpl标签(名称固定)
+        '<tr>',
+          '<td>孩子</td>',
+          '<td>',
+            '<tpl for="kids">',
+              '<span> {name}- {age};</span>',
+            '</tpl>',
+          '</td>',
+        '</tr>',
+
+        // 在子对象模板块中 通过"parent"对象(名称固定)访问父对象中的属性.
+        '<tr>',
+          '<td>孩子和爹</td>',
+          '<td>',
+            '<tpl for="kids">',
+              '<span> {name}\'s Dad:{parent.name};</span>',
+            '</tpl>',
+          '</td>',
+        '</tr>',
+
+        // 自动渲染单根数组(flat arrays).
+        // 单根数组(Flat arrays),指的是不包含分支对象只包含值的数组.
+        // 配合tpl标签,使用特殊变量{.}可循环输出这类型的数组:
+        '<tr>',
+          '<td>喜好</td>',
+          '<td>',
+            /*'<tpl for="drinks">',
+              '<span> - {.}</span>',
+            '</tpl>',*/
+          '</td>',
+        '</tr>',
+      '</table>',
+
+      // 基本的条件逻辑判断 配合标签tpl和操作符if的使用，
+      // 可为你执行条件判断，以决定模板的哪一部分需要被渲染出来。
+      // 注意 > 的编码 在html中使用 &gt; 解释 >
+      '<tr>',
+        '<td>大于1岁的孩子</td>',
+        '<td>',
+          '<tpl for="kids">',
+            '<tpl if="age &gt; 1">',
+              '<span> {name}- {age};</span>',
+            '</tpl>',
+          '</tpl>',
+        '</td>',
+      '</tr>',
+      '<br>',
+
+
+      // 在XTemplate中，{[ ... ]}范围内的内容会在模板作用域的范围下执行。
+      // {[]}中的特殊取值:
+      // values 当前作用域下的对象, {[values.name]} 相当于{name};
+      // parent 父级模板对象;
+      // xindex 若是循环模板,表示当前循环的索引index(从1开始);
+      // xcount 若是循环模板,表示循环次数.
+      '<tr>',
+        '<td>Kids: {[values.name.toUpperCase()]}',
+          '<tpl for="kids">',
+            '<span class="{[xindex % 2 === 0 ? "even" : "odd"]}"> {name}-{[parent.name.toUpperCase()]}; </span>',
+          '</tpl>',
+        '</td>',
+      '</tr>',
+      '<br><br>',
+
+
+      // 对于一些复杂的处理,可以通过配置项对象的方式传入一个
+      // 或一个以上的成员函数到XTemplate构造器中:
+      '<tr>',
+        '<td>Kids distinguish:</td>',
+          '<tpl for="kids">',
+            '<tpl if="this.isGirl(name)">',
+              '<p>Girl :{name}-{age}</p>',
+            '</tpl>',
+            '<tpl if="this.isBaby(age)">',
+              '<p>Baby: {name}-{age}</p>',
+            '</tpl>',
+          '</tpl>',
+      '</tr>',
+      {
+        // xTemplate 构造器
+        isGirl: function (name) {
+          return name === 'Sara Grace';
+        },
+        isBaby: function (age) {
+          return age < 1;
+        }
+      }
+    );
+    xtpl.overwrite(panel.body, data, null);
+
+
+
+    var ajaxPanel = new Ext.Panel({
+      title: 'ajaxRemoteData',
+      frame: true,
+      renderTo: 'remoteAjaxComponent'
+    });
+
+    // 使用Ext的Ajax
+    Ext.Ajax.request({
+      url: 'http://localhost:9090/ext/data/getXtemplateData',
+      method: 'get',
+      success: function (response) {
+        var jsonData = Ext.util.JSON.decode(response.responseText);
+        // 编译模板
+        xtpl.compile();
+        // 向模板中填充数据,会覆盖之前的数据
+        xtpl.overwrite(ajaxPanel.body, jsonData, null);
+      },
+      failure: function (jsonData) {
+        alert("Ajax请求失败" + jsonData);
+      }
+    })
+
+  })
+
+</script>
+</body>
+</html>
