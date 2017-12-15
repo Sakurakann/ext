@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ext 继承 extends</title>
+<!--
+  在实际开发中 我们在使用试图组件时,经常要设置高度,宽度,标题等属性
+  这些属性可以通过"继承 extends"定义在新定义的组件中,从而达到重用的目的.
+-->
+  <script src="ext/adapter/ext/ext-base-debug.js"></script>
+  <script src="ext/ext-all-debug.js"></script>
+
+  <link rel="stylesheet" href="ext/resources/css/ext-all.css" />
+</head>
+<body>
+
+<div id="originPanel1"></div>
+<div id="originPanel2"></div>
+<div id="extendedPanel1"></div>
+<div id="extendedPanel2"></div>
+<div id="extendedFormPanel1"></div>
+<div id="extendedFormPanel2"></div>
+
+<script>
+  Ext.onReady(function () {
+    var originPanel1 = new Ext.Panel({
+      title: 'ext 原生面板1',
+      width: 500,
+      height: 100,
+      html: '<h1>原生面板1</h1>',
+      renderTo: 'originPanel1'
+    });
+
+    var originPanel2 = new Ext.Panel({
+      title: 'ext 原生面板2',
+      width: 500,
+      height: 100,
+      html: '<h2>原生面板2</h2>',
+      renderTo: 'originPanel2'
+    });
+
+    // ------ 继承开始 自定义类别 ------ //
+    // extend(Function subclass, Function superclass, Object overrides) : Function
+    // superclass 被继承的类; overrides 成员列表,就是将会复制到子类的prototype对象身上
+    // 注意其中可以包含一个元素为属于子类的构造器，叫constructor的成员。
+    // 如果该项不指定，就意味引用父类的构造器，父类构造器就会直接接收所有的参数。
+    // 这里使用两个参数形式
+    var myExtendedPanel = Ext.extend(Ext.Panel, {
+      title: '继承重写面板',
+      width: 500,
+      height: 100
+    });
+    // 子类将拥有父类的全部属性,其中在子类中定义的属性将覆盖父类 可以理解为Java中的多态.
+    // ------ 继承定义结束 ------ //
+
+    // 使用继承重写后的子类来创建该类的实例
+    var extendedPanel1 = new myExtendedPanel({
+      html: '<h1>extendedPanel1</h1>',
+      renderTo: 'extendedPanel1'
+    });
+    var extendedPanel2 = new myExtendedPanel({
+      html: '<h2>extendedPanel2</h2>',
+      renderTo: 'extendedPanel2'
+    });
+
+
+    var myFormPanel = Ext.extend(Ext.form.FormPanel,{
+      myid: 'myid',
+      title: '自定义表单面板',
+      width: 500,
+      labelWidth: '80',
+      labelAlign: 'right',
+      frame: true,
+      // 初始化中包含其他组件
+      initComponent: function () {
+        this.items = [{
+          xtype: 'textfield',
+          fieldLabel: '用户名',
+          id:this.usernameid, // 暴露变化的部分,创建实例时可以个性化.
+          name: 'username'
+        },{
+          xtype: 'textfield',
+          fieldLabel: '密码',
+          inputType: 'password',
+          id: this.passwordid, // 变化,需要在创建自定义实例时指定,
+          name: 'password'
+        }];
+        this.buttons = [{
+          text: '登录',
+          handler: this.submit,
+          scope: this
+        },{
+          text: '重置',
+          handler: this.cancel,
+          scope: this
+        }];
+        // --- 完成个性化加载子组件后,要调用父类的initComponent --- //
+        myFormPanel.superclass.initComponent.call(this, arguments);
+      }
+    });
+
+    var extendedFormPanel1 = new myFormPanel({
+      usernameid: 'username',
+      submit: function () {
+        alert("想要登录");
+      },
+      cancel: function () {
+        alert("取消登录");
+        extendedFormPanel1.getForm().reset();
+      },
+      renderTo: 'extendedFormPanel1'
+    })
+
+  })
+
+</script>
+
+</body>
+</html>

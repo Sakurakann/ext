@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ext 动态复选框</title>
+  <script type="text/javascript" src="ext/adapter/ext/ext-base.js"></script>
+  <script type="text/javascript" src="ext/ext-all.js"></script>
+  <script type="text/javascript" src="ext/ext-basex.js"></script>
+  <link rel="stylesheet" type="text/css" href="ext/resources/css/ext-all.css"/>
+</head>
+<body>
+<div style="width: 200px; height: 200px" id="remoteCheckbox"></div>
+<script>
+  Ext.onReady(function () {
+    Ext.namespace('Ext.ux');// 定义一个Ext.ux的包,相当于Java中的package
+
+    // 在Ext.ux包下创建一个RemoteCheckboxGroup类 ,该类继承自CheckboxGroup,相当于重写
+    // 但是没有破坏原始类
+    Ext.ux.RemoteCheckboxGroup = Ext.extend(Ext.form.CheckboxGroup,{
+      url: '',
+      boxLabel: '',
+      inputValue: '',
+      setValue: function (value) {
+        // 是否可拆分
+        if (value.split) {
+          value = value.split(',');
+        }
+        this.reset();
+        for (let i = 0; i < value.length; i++) {
+          this.items.each(function (item) {
+            if (item.inputValue === value[i]) {
+
+/**
+ * Sets either the checked/unchecked status of this Radio, or, if a string value
+ * is passed, checks a sibling Radio of the same name whose value is the value specified.
+ * @param value {String/Boolean} Checked value, or the value of the sibling radio button to check.
+ * @return {Ext.form.Field} this
+ */
+              item.setValue(true);
+            }
+          }, this)
+        }
+      },
+      reset: function () {
+        this.items.each(function (item) {
+          item.setValue(false);
+        })
+      },
+      getValue: function () {
+        let val = [];
+        this.items.each(function (item) {
+          if (item.getValue() === true) {
+            val.push(item.inputValue);
+          }
+        });
+        return val.join(',');
+      },
+      // 渲染效果 @see CheckboxGroup
+      onRender: function (ct, position) {
+        let items = [];
+        if (!this.items) {
+          // 如果原checkboxGroup中没有数据
+          let tempItem = this.items;
+          Ext.Ajax.request({
+            method: 'get',
+            url: this.url,
+            scope: this,
+            async: false, // 不异步(ajax选择同步执行)
+            success: function (response) {
+              let data = Ext.util.JSON.decode(response.responseText);
+              if (this.panel) {
+                let columns = this.panel.items;
+                if (columns) {
+                  for (let i = 1; i < columns.items.length; i++) {
+                    column = columns.items[i];
+                    column.removeAll();
+                  }
+                  tempItem.clear();
+                }
+              }
+              for (let i = 0; i < data.length; i++) {
+                let tempData = data[i];
+                alert(tempData.name);
+                let checkbox = {
+                  // 取值 相当于tempData.name (@line 105 boxLabel: 'name',)
+                  boxLabel: tempData[this.boxLabel],
+                  name: this.name,
+                  inputValue: tempData[this.inputValue]
+                };
+                items.push(checkbox);
+              }
+            }
+          });
+          this.items = items;
+        }
+        Ext.ux.RemoteCheckboxGroup.superclass.onRender.call(this, ct, position);
+      }
+    });
+    //
+    Ext.reg('remotecheckboxgroup', Ext.ux.RemoteCheckboxGroup);
+
+    new Ext.ux.RemoteCheckboxGroup({
+      url: 'http://localhost:9090/ext/common/getCheckboxData',
+      renderTo: 'remoteCheckbox',
+      boxLabel: 'name',
+      inputValue: 'id',
+      fieldLabel: '招聘来源',
+      frame: true
+    })
+
+  })
+
+</script>
+
+</body>
+</html>
